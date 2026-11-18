@@ -1,0 +1,14 @@
+node_modules/
+dist/
+coverage/
+.vite/
+.__mf__temp/
+__mf__virtual/
+@mf-types/
+playwright-report/
+test-results/
+*.tsbuildinfo
+.env
+.env.*
+!.env.example
+.DS_Store

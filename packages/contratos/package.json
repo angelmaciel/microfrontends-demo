@@ -1,0 +1,17 @@
+{
+  "name": "@demo/contratos",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Contrato compartido entre microfrontends: tipos de dominio, utilidades puras y tema de MUI",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./tema": "./src/tema.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  },
+  "peerDependencies": {
+    "@mui/material": "9.5.0"
+  }
+}

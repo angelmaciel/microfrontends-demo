@@ -1,0 +1,27 @@
+{
+  "name": "@demo/host",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Shell: layout, rutas, sesión y store; compone los microfrontends en runtime",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@demo/contratos": "0.1.0",
+    "@emotion/react": "11.14.0",
+    "@emotion/styled": "11.14.1",
+    "@mui/material": "9.5.0",
+    "@reduxjs/toolkit": "2.14.0",
+    "react": "19.3.1",
+    "react-dom": "19.3.1",
+    "react-redux": "9.3.1",
+    "react-router": "8.5.1"
+  },
+  "devDependencies": {
+    "@module-federation/vite": "1.23.9"
+  }
+}
