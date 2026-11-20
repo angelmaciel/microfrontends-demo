@@ -44,14 +44,14 @@ sin levantar el host.
 
 ## Fases (una vertical a la vez, cada una cierra con pruebas en verde)
 
-| Fase | Día    | Contenido                                                                                            | Cierra cuando                                                            | Estado       |
-| ---- | ------ | ---------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------ | ------------ |
-| 0    | mié 18 | Monorepo (npm workspaces), TS estricto, ESLint, Vitest, CI de calidad y seguridad, docs              | `npm run verificar` en verde                                             | ✅ hecha     |
-| 1    | jue 19 | host + catalogo + carrito federados, React compartido como singleton, fallback si un remote no carga | Se ve el catálogo dentro del host y el host sobrevive si apago un remote | ⏭️ siguiente |
-| 2    | jue 19 | API Hono + login JWT + ruta protegida + 401 → cerrar sesión                                          | Pruebas de API y del flujo de login                                      | pendiente    |
-| 3    | vie 20 | Store Redux compartido: agregar en catalogo, ver en carrito y en el contador                         | Prueba E2E del flujo completo                                            | pendiente    |
-| 4    | sáb 21 | Más pruebas de componentes, Playwright E2E del sistema compuesto y su job en CI                      | CI en verde                                                              | pendiente    |
-| 5    | dom 22 | Deploy (cada app por separado), README con diagrama y guion de la entrevista                         | URL pública funcionando                                                  | pendiente    |
+| Fase | Día    | Contenido                                                                                            | Cierra cuando                                                            | Estado      |
+| ---- | ------ | ---------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------ | ----------- |
+| 0    | mié 18 | Monorepo (npm workspaces), TS estricto, ESLint, Vitest, CI de calidad y seguridad, docs              | `npm run verificar` en verde                                             | ✅ hecha    |
+| 1    | jue 19 | host + catalogo + carrito federados, React compartido como singleton, fallback si un remote no carga | Se ve el catálogo dentro del host y el host sobrevive si apago un remote | ✅ hecha    |
+| 2    | jue 19 | API Hono + login JWT + ruta protegida + 401 → cerrar sesión                                          | Pruebas de API y del flujo de login                                      | ⏭️siguiente |
+| 3    | vie 20 | Store Redux compartido: agregar en catalogo, ver en carrito y en el contador                         | Prueba E2E del flujo completo                                            | pendiente   |
+| 4    | sáb 21 | Más pruebas de componentes, Playwright E2E del sistema compuesto y su job en CI                      | CI en verde                                                              | pendiente   |
+| 5    | dom 22 | Deploy (cada app por separado), README con diagrama y guion de la entrevista                         | URL pública funcionando                                                  | pendiente   |
 
 ### Fase 1 — qué hay que resolver al empezar
 
@@ -70,6 +70,14 @@ sin levantar el host.
 Sin federar, cada app compila su propia copia de React y MUI: **~319 kB cada una (~103 kB gzip)**.
 Al compartirlas como singleton en la fase 1, el navegador las descarga una sola vez. Medir de nuevo
 al cerrar la fase 1 y anotar la diferencia.
+
+### Dato medido en la fase 1
+
+Con `shared` singleton, lo propio que descarga cada remote al montarse en el host es su
+`remoteEntry.js` (~7 kB gzip) más el chunk expuesto (<0,5 kB gzip): **~8 kB por remote**, contra
+~103 kB gzip de la fase 0. React y MUI llegan una sola vez, desde el host. Costo: un paquete
+compartido no se puede achicar con tree-shaking, porque cualquier remote podría usar cualquier
+componente. `@mui/material` entero pesa ~142 kB gzip.
 
 ## Qué voy a poder explicar en la entrevista
 

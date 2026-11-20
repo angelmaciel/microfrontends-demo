@@ -1,8 +1,20 @@
+import { fileURLToPath } from "node:url";
 import react from "@vitejs/plugin-react";
 import { defineConfig } from "vitest/config";
 
+// Módulos que en runtime resuelve Module Federation; en las pruebas apuntan a un módulo de relleno.
+// El query string hace que cada uno sea un módulo distinto, así vi.mock puede simularlos por
+// separado aunque compartan archivo.
+const remotesFalsos = Object.fromEntries(
+  ["catalogo/Catalogo", "carrito/Carrito", "carrito/MiniCarrito"].map((id) => [
+    id,
+    `${fileURLToPath(new URL("./apps/host/src/pruebas/remoteFalso.tsx", import.meta.url))}?remote=${id}`,
+  ]),
+);
+
 const microfrontend = (nombre: string) => ({
   plugins: [react()],
+  resolve: nombre === "host" ? { alias: remotesFalsos } : {},
   test: {
     name: nombre,
     root: `apps/${nombre}`,
