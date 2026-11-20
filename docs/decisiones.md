@@ -52,3 +52,14 @@ Formato: contexto, decisión, por qué y alternativa descartada.
 
 - **Decisión:** versiones exactas (sin `^`) y con al menos 14 días publicadas. Excepción: parches de seguridad.
 - **Por qué:** mismo criterio de seguridad que en CalzApp (auditoría de CVE por versión).
+
+## D-07 · Tipos de los remotes declarados a mano en el host — aprobada (18/11)
+
+- **Decisión:** `apps/host/src/remotes.d.ts` declara cada módulo expuesto
+  (`declare module "catalogo/Catalogo"`). El plugin corre con `dts: false`.
+- **Por qué:** es simple, y el typecheck y el CI del host no dependen de que los remotes estén
+  levantados ni de descargar archivos de tipos por la red.
+- **Riesgo asumido:** si un remote cambia sus props, el compilador del host no lo detecta. Se
+  mitiga tipando las props con tipos de `@demo/contratos`.
+- **Descartado:** `@mf-types` generados por el plugin (tipos siempre sincronizados, pero suman un
+  paso de red al typecheck y más piezas que mantener).
