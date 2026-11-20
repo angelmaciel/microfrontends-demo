@@ -1,4 +1,4 @@
-import { Alert, Button, CircularProgress, Stack } from "@mui/material";
+import { Alert, Box, Button, CircularProgress, Stack } from "@mui/material";
 import {
   Component,
   type ComponentType,
@@ -41,9 +41,10 @@ export function RemoteSeguro({ cargar, nombre, variante = "pagina" }: Props) {
       key={intento}
       alFallar={
         compacta ? (
-          <Alert severity="warning" variant="outlined" sx={{ py: 0 }}>
+          // Texto simple: hereda el color del encabezado, así mantiene el contraste.
+          <Box component="span" role="alert" sx={{ fontSize: "0.875rem", textTransform: "none" }}>
             {nombre} no disponible
-          </Alert>
+          </Box>
         ) : (
           <Alert
             severity="warning"
