@@ -1,8 +1,9 @@
 import type { Producto } from "@demo/contratos";
-import { render, screen, within } from "@testing-library/react";
+import { screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import Catalogo from "./Catalogo";
+import { renderConStore } from "./pruebas/renderConStore";
 
 const productos: Producto[] = [
   { id: "yerba", nombre: "Yerba mate 1 kg", precio: 32000, imagen: "/yerba.jpg", stock: 10 },
@@ -26,13 +27,13 @@ describe("Catalogo (expuesto)", () => {
       "fetch",
       vi.fn(() => new Promise(() => undefined)),
     );
-    render(<Catalogo />);
+    renderConStore(<Catalogo />);
     expect(screen.getByRole("status", { name: "Cargando productos" })).toBeInTheDocument();
   });
 
   it("lista los productos con su precio en guaraníes y marca los que no tienen stock", async () => {
     vi.stubGlobal("fetch", vi.fn().mockResolvedValue(respuesta(200, productos)));
-    render(<Catalogo />);
+    renderConStore(<Catalogo />);
 
     const tarjetas = await screen.findAllByRole("listitem");
     expect(tarjetas).toHaveLength(2);
@@ -47,7 +48,7 @@ describe("Catalogo (expuesto)", () => {
 
   it("si no hay productos lo dice", async () => {
     vi.stubGlobal("fetch", vi.fn().mockResolvedValue(respuesta(200, [])));
-    render(<Catalogo />);
+    renderConStore(<Catalogo />);
     expect(await screen.findByText(/Todavía no hay productos/)).toBeInTheDocument();
   });
 
@@ -57,7 +58,7 @@ describe("Catalogo (expuesto)", () => {
       .mockRejectedValueOnce(new TypeError("Failed to fetch"))
       .mockResolvedValue(respuesta(200, productos));
     vi.stubGlobal("fetch", fetchFalso);
-    render(<Catalogo />);
+    renderConStore(<Catalogo />);
 
     expect(await screen.findByRole("alert")).toHaveTextContent("No pudimos conectarnos");
     await userEvent.click(screen.getByRole("button", { name: "Reintentar" }));
@@ -65,4 +66,18 @@ describe("Catalogo (expuesto)", () => {
     expect(await screen.findAllByRole("listitem")).toHaveLength(2);
     expect(fetchFalso).toHaveBeenCalledTimes(2);
   });
+});
+
+it("agregar un producto lo suma al carrito del store; sin stock no se puede", async () => {
+  vi.stubGlobal("fetch", vi.fn().mockResolvedValue(respuesta(200, productos)));
+  const store = renderConStore(<Catalogo />);
+
+  await userEvent.click(
+    await screen.findByRole("button", { name: "Agregar Yerba mate 1 kg al carrito" }),
+  );
+
+  expect(store.getState().carrito.lineas).toHaveLength(1);
+  expect(
+    screen.getByRole("button", { name: "Agregar Camisa de ao po'i al carrito" }),
+  ).toBeDisabled();
 });
