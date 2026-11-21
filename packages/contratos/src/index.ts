@@ -49,4 +49,12 @@ export interface ErrorRespuesta {
   error: string;
 }
 
+/**
+ * Props que el host le pasa al Carrito expuesto. El carrito no conoce el router del host:
+ * cuando necesita mandar al usuario al login, se lo pide al host con este callback.
+ */
+export interface PropsCarrito {
+  irALogin: () => void;
+}
+
 export { formatearPrecio } from "./precio";
