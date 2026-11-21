@@ -4,6 +4,7 @@ import {
   Box,
   Button,
   Card,
+  CardActions,
   CardContent,
   CardMedia,
   Chip,
@@ -12,6 +13,8 @@ import {
   Typography,
 } from "@mui/material";
 import { useProductos } from "./useProductos";
+import { useDispatch } from "react-redux";
+import { agregarAlCarrito } from "@demo/contratos/carrito";
 
 // Una columna en celular, dos en tablet y tres en escritorio (primero celular).
 const grilla = {
@@ -69,6 +72,8 @@ export default function Catalogo() {
 
 function TarjetaProducto({ producto }: { producto: Producto }) {
   const sinStock = producto.stock === 0;
+  const dispatch = useDispatch();
+
   return (
     <Card component="li" variant="outlined" aria-labelledby={`producto-${producto.id}`}>
       <CardMedia
@@ -89,6 +94,17 @@ function TarjetaProducto({ producto }: { producto: Producto }) {
           {sinStock && <Chip label="Sin stock" size="small" />}
         </Stack>
       </CardContent>
+      <CardActions>
+        <Button
+          fullWidth
+          variant="contained"
+          disabled={sinStock}
+          onClick={() => dispatch(agregarAlCarrito(producto))}
+          aria-label={`Agregar ${producto.nombre} al carrito`}
+        >
+          Agregar al carrito
+        </Button>
+      </CardActions>
     </Card>
   );
 }
