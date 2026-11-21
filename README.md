@@ -24,11 +24,24 @@ Requiere Node 24.22.1 o superior.
 
 ```bash
 npm ci
+```
+
+La API necesita un secreto para firmar los JWT y no arranca sin él. Crear `apps/api/.env` (no se
+versiona) con un secreto aleatorio:
+
+```bash
+node -e "require('fs').writeFileSync('apps/api/.env','PUERTO=4000\nJWT_SECRETO='+require('crypto').randomBytes(32).toString('base64url')+'\n')"
+```
+
+Después:
+
+```bash
 npm run dev
 ```
 
-Abrir http://localhost:5000. Cada microfrontend también corre solo, por ejemplo
-`npm run dev -w @demo/catalogo` → http://localhost:5001.
+Abrir http://localhost:5000 e ingresar con el usuario de prueba **demo@tienda.com** /
+**demo1234**. Cada microfrontend también corre solo, por ejemplo `npm run dev -w @demo/catalogo` →
+http://localhost:5001.
 
 ## Calidad
 
