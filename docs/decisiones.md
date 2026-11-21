@@ -63,3 +63,14 @@ Formato: contexto, decisión, por qué y alternativa descartada.
   mitiga tipando las props con tipos de `@demo/contratos`.
 - **Descartado:** `@mf-types` generados por el plugin (tipos siempre sincronizados, pero suman un
   paso de red al typecheck y más piezas que mantener).
+
+## D-08 · Datos en memoria y usuario de demo con scrypt — aprobada (20/11)
+
+- **Decisión:** la API guarda productos y usuarios en memoria (`apps/api/src/datos.ts`). Hay un
+  usuario de demo con la contraseña hasheada con `scrypt` de Node y comparada en tiempo constante.
+  El secreto del JWT se lee de `JWT_SECRETO` (mínimo 32 caracteres) y el servidor no arranca sin él.
+- **Por qué:** la demo es sobre el frontend; una base de datos suma infraestructura sin cambiar lo
+  que se muestra. `scrypt` viene con Node, así que no agrega dependencias.
+- **Consecuencias:** los pedidos no se guardan y se pierden al reiniciar. El total se calcula en el
+  servidor con sus propios precios; nunca se confía en el precio que manda el cliente.
+- **Descartado:** SQLite/Prisma (más piezas para desplegar) y `bcrypt` (dependencia nativa).

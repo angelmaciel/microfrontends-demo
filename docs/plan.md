@@ -44,14 +44,14 @@ sin levantar el host.
 
 ## Fases (una vertical a la vez, cada una cierra con pruebas en verde)
 
-| Fase | Día    | Contenido                                                                                            | Cierra cuando                                                            | Estado      |
-| ---- | ------ | ---------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------ | ----------- |
-| 0    | mié 18 | Monorepo (npm workspaces), TS estricto, ESLint, Vitest, CI de calidad y seguridad, docs              | `npm run verificar` en verde                                             | ✅ hecha    |
-| 1    | jue 19 | host + catalogo + carrito federados, React compartido como singleton, fallback si un remote no carga | Se ve el catálogo dentro del host y el host sobrevive si apago un remote | ✅ hecha    |
-| 2    | jue 19 | API Hono + login JWT + ruta protegida + 401 → cerrar sesión                                          | Pruebas de API y del flujo de login                                      | ⏭️siguiente |
-| 3    | vie 20 | Store Redux compartido: agregar en catalogo, ver en carrito y en el contador                         | Prueba E2E del flujo completo                                            | pendiente   |
-| 4    | sáb 21 | Más pruebas de componentes, Playwright E2E del sistema compuesto y su job en CI                      | CI en verde                                                              | pendiente   |
-| 5    | dom 22 | Deploy (cada app por separado), README con diagrama y guion de la entrevista                         | URL pública funcionando                                                  | pendiente   |
+| Fase | Día    | Contenido                                                                                            | Cierra cuando                                                            | Estado       |
+| ---- | ------ | ---------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------ | ------------ |
+| 0    | mié 18 | Monorepo (npm workspaces), TS estricto, ESLint, Vitest, CI de calidad y seguridad, docs              | `npm run verificar` en verde                                             | ✅ hecha     |
+| 1    | jue 19 | host + catalogo + carrito federados, React compartido como singleton, fallback si un remote no carga | Se ve el catálogo dentro del host y el host sobrevive si apago un remote | ✅ hecha     |
+| 2    | jue 19 | API Hono + login JWT + ruta protegida + 401 → cerrar sesión; catálogo con productos reales           | Pruebas de API y del flujo de login                                      | ✅ hecha     |
+| 3    | vie 20 | Store Redux compartido: agregar en catalogo, ver en carrito y en el contador                         | Prueba E2E del flujo completo                                            | ⏭️ siguiente |
+| 4    | sáb 21 | Más pruebas de componentes, Playwright E2E del sistema compuesto y su job en CI                      | CI en verde                                                              | pendiente    |
+| 5    | dom 22 | Deploy (cada app por separado), README con diagrama y guion de la entrevista                         | URL pública funcionando                                                  | pendiente    |
 
 ### Fase 1 — qué hay que resolver al empezar
 
@@ -64,6 +64,17 @@ sin levantar el host.
 - Tipos de los remotes: declarar los módulos (`declare module "catalogo/Catalogo"`) o usar los
   tipos que genera el plugin (`@mf-types`). Decidir y registrar como D-07.
 - Separar en cada remote el componente expuesto (`Catalogo.tsx`) de su `App.tsx` standalone.
+
+### Fase 3 — qué hay que resolver al empezar
+
+- Slice `carrito` en `@demo/contratos` (agregar, quitar, cambiar cantidad, vaciar), montado en el
+  store del host junto a `sesion`.
+- Catálogo: botón "Agregar al carrito" que despacha la acción del contrato; deshabilitado sin stock.
+- MiniCarrito y Carrito leen el store con `useSelector`; el contador refleja lo que se agrega.
+- Confirmar pedido: `POST /api/pedidos` con el token. Sin sesión, mandar al login; ante un 401,
+  despachar `cerrarSesion({ motivo: "expirada" })`.
+- Cada remote en modo standalone necesita su propio store mínimo con los mismos slices.
+- Ticket #3: el encabezado no se recupera cuando el carrito vuelve (evaluar si entra).
 
 ### Dato medido en la fase 0 (sirve para la entrevista)
 
