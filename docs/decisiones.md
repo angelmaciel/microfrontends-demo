@@ -74,3 +74,13 @@ Formato: contexto, decisión, por qué y alternativa descartada.
 - **Consecuencias:** los pedidos no se guardan y se pierden al reiniciar. El total se calcula en el
   servidor con sus propios precios; nunca se confía en el precio que manda el cliente.
 - **Descartado:** SQLite/Prisma (más piezas para desplegar) y `bcrypt` (dependencia nativa).
+
+## D-09 · El host le pasa callbacks tipados a los remotes — aprobada (21/11)
+
+- **Decisión:** cuando un remote necesita algo que es del host (por ejemplo, navegar al login), lo
+  pide con una prop. El tipo de esas props vive en `@demo/contratos` (`PropsCarrito`) y
+  `remotes.d.ts` lo usa; `RemoteSeguro` es genérico y exige que las props coincidan.
+- **Por qué:** el remote no depende de React Router ni de cómo el host arma sus rutas. Si el equipo
+  del carrito cambia sus props, el host deja de compilar en lugar de fallar en producción.
+- **Descartado:** compartir `react-router` como singleton para que el remote navegue solo (acopla
+  el remote a las rutas del host) y eventos del navegador (`CustomEvent`), que no tienen tipos.

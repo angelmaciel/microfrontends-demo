@@ -49,8 +49,8 @@ sin levantar el host.
 | 0    | mié 18 | Monorepo (npm workspaces), TS estricto, ESLint, Vitest, CI de calidad y seguridad, docs              | `npm run verificar` en verde                                             | ✅ hecha     |
 | 1    | jue 19 | host + catalogo + carrito federados, React compartido como singleton, fallback si un remote no carga | Se ve el catálogo dentro del host y el host sobrevive si apago un remote | ✅ hecha     |
 | 2    | jue 19 | API Hono + login JWT + ruta protegida + 401 → cerrar sesión; catálogo con productos reales           | Pruebas de API y del flujo de login                                      | ✅ hecha     |
-| 3    | vie 20 | Store Redux compartido: agregar en catalogo, ver en carrito y en el contador                         | Prueba E2E del flujo completo                                            | ⏭️ siguiente |
-| 4    | sáb 21 | Más pruebas de componentes, Playwright E2E del sistema compuesto y su job en CI                      | CI en verde                                                              | pendiente    |
+| 3    | vie 20 | Store Redux compartido: agregar en catalogo, ver en carrito y en el contador                         | Prueba E2E del flujo completo                                            | ✅ hecha     |
+| 4    | sáb 21 | Más pruebas de componentes, Playwright E2E del sistema compuesto y su job en CI                      | CI en verde                                                              | ⏭️ siguiente |
 | 5    | dom 22 | Deploy (cada app por separado), README con diagrama y guion de la entrevista                         | URL pública funcionando                                                  | pendiente    |
 
 ### Fase 1 — qué hay que resolver al empezar
@@ -75,6 +75,16 @@ sin levantar el host.
   despachar `cerrarSesion({ motivo: "expirada" })`.
 - Cada remote en modo standalone necesita su propio store mínimo con los mismos slices.
 - Ticket #3: el encabezado no se recupera cuando el carrito vuelve (evaluar si entra).
+
+### Fase 4 — qué hay que resolver al empezar
+
+- Playwright con el sistema compuesto levantado (api, host y los dos remotes en modo preview).
+- E2E del flujo completo: agregar en el catálogo → el contador sube → carrito → ingresar →
+  confirmar el pedido → el carrito queda vacío.
+- E2E de resiliencia: con el carrito apagado, el catálogo sigue andando.
+- Job de CI que construye las apps, las levanta y corre Playwright.
+- Ticket #3: el encabezado no se recupera cuando el carrito vuelve.
+- Proteger `main` en GitHub: PR obligatorio y checks del CI en verde.
 
 ### Dato medido en la fase 0 (sirve para la entrevista)
 
