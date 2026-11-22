@@ -3,17 +3,38 @@ import {
   Component,
   type ComponentType,
   type ErrorInfo,
+  type LazyExoticComponent,
   type ReactNode,
   Suspense,
   lazy,
   useState,
 } from "react";
 
-type CargarRemote = () => Promise<{ default: ComponentType }>;
+// Un `lazy` por remote, guardado fuera de React. No puede vivir en el estado del componente:
+// React Router navega dentro de una transición, y si el remote suspende, React descarta ese
+// render sin guardar el estado; al reintentar crearía otro `lazy`, que vuelve a suspender, y así
+// para siempre (la URL cambiaba pero la página no). Fuera de React sobrevive a esos descartes.
+// La clave es la función `cargar`; cada remote tiene props distintas, por eso el valor es unknown.
+const lazies = new WeakMap<object, unknown>();
 
-interface Props {
+/** `lazy` también guarda una carga fallida; `nuevo` lo reemplaza para poder reintentar. */
+function obtenerLazy<P>(
+  cargar: () => Promise<{ default: ComponentType<P> }>,
+  { nuevo = false } = {},
+): LazyExoticComponent<ComponentType<P>> {
+  let componente = lazies.get(cargar) as LazyExoticComponent<ComponentType<P>> | undefined;
+  if (!componente || nuevo) {
+    componente = lazy(cargar);
+    lazies.set(cargar, componente);
+  }
+  return componente;
+}
+
+interface Props<P> {
   /** Import dinámico del módulo remoto, por ejemplo `() => import("catalogo/Catalogo")`. */
-  cargar: CargarRemote;
+  cargar: () => Promise<{ default: ComponentType<P> }>;
+  /** Props para el componente remoto, tipadas por el contrato (por ejemplo `PropsCarrito`). */
+  props?: P;
   /** Nombre visible del microfrontend para el mensaje de error. */
   nombre: string;
   /** "compacta" para piezas chicas como el contador del encabezado. */
@@ -22,14 +43,18 @@ interface Props {
 
 // Carga un microfrontend aislando sus fallas: si el remote está caído o lanza un error al
 // renderizar, solo se reemplaza su parte de la página y el resto del host sigue funcionando.
-export function RemoteSeguro({ cargar, nombre, variante = "pagina" }: Props) {
-  // `lazy` guarda el resultado de la primera carga, incluso si falló. Para reintentar hay que
-  // crear un lazy nuevo; se guarda en estado para que no se recree en cada render.
-  const [Remoto, setRemoto] = useState(() => lazy(cargar));
+// Es genérico: TypeScript exige que `props` coincida con lo que el remote declara que recibe.
+export function RemoteSeguro<P extends object>({
+  cargar,
+  props,
+  nombre,
+  variante = "pagina",
+}: Props<P>) {
   const [intento, setIntento] = useState(0);
+  const Remoto = obtenerLazy(cargar);
 
   const reintentar = () => {
-    setRemoto(() => lazy(cargar));
+    obtenerLazy(cargar, { nuevo: true });
     setIntento((n) => n + 1);
   };
 
@@ -66,7 +91,10 @@ export function RemoteSeguro({ cargar, nombre, variante = "pagina" }: Props) {
           </Stack>
         }
       >
-        <Remoto />
+        {/* La regla supone que `Remoto` se crea en cada render, pero sale de la caché `lazies`:
+            es el mismo componente mientras no se reintente. */}
+        {/* eslint-disable-next-line react-hooks/static-components */}
+        <Remoto {...(props as P)} />
       </Suspense>
     </LimiteDeError>
   );

@@ -4,18 +4,21 @@ import { iniciarSesion, seleccionarSesion } from "@demo/contratos/sesion";
 import { Alert, Button, Stack, TextField, Typography } from "@mui/material";
 import { type FormEvent, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Navigate, useNavigate } from "react-router";
+import { Navigate, useLocation, useNavigate } from "react-router";
 
 export function Login() {
   const { usuario, motivoCierre } = useSelector(seleccionarSesion);
   const dispatch = useDispatch();
   const navegar = useNavigate();
+  // Si vino desde otra página (por ejemplo, el carrito al confirmar), vuelve ahí al ingresar.
+  const { state } = useLocation() as { state: { desde?: string } | null };
+  const destino = state?.desde ?? "/";
   const [email, setEmail] = useState("");
   const [contrasena, setContrasena] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [enviando, setEnviando] = useState(false);
 
-  if (usuario) return <Navigate to="/" replace />;
+  if (usuario) return <Navigate to={destino} replace />;
 
   const enviar = async (evento: FormEvent) => {
     evento.preventDefault();
@@ -29,7 +32,7 @@ export function Login() {
       // El token queda solo en el store (memoria): nunca en localStorage, así un XSS no puede
       // leerlo de forma persistente (D-04). Recargar la página cierra la sesión.
       dispatch(iniciarSesion(respuesta));
-      navegar("/", { replace: true });
+      navegar(destino, { replace: true });
     } catch (causa) {
       setError(causa instanceof ErrorApi ? causa.message : "Ocurrió un error inesperado.");
       setEnviando(false);

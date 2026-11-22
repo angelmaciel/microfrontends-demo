@@ -1,7 +1,7 @@
 import { cerrarSesion, seleccionarSesion } from "@demo/contratos/sesion";
 import { AppBar, Box, Button, Container, Toolbar, Typography } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
-import { Link, Route, Routes } from "react-router";
+import { Link, Route, Routes, useNavigate } from "react-router";
 import { Login } from "./Login";
 import { RemoteSeguro } from "./RemoteSeguro";
 
@@ -15,6 +15,9 @@ const cargarMiniCarrito = () => import("carrito/MiniCarrito");
 export function App() {
   const { usuario } = useSelector(seleccionarSesion);
   const dispatch = useDispatch();
+  const navegar = useNavigate();
+  // El carrito pide ir al login sin conocer el router; el host decide a dónde y recuerda volver.
+  const irALogin = () => navegar("/login", { state: { desde: "/carrito" } });
 
   return (
     <>
@@ -50,7 +53,9 @@ export function App() {
           <Route path="/" element={<RemoteSeguro cargar={cargarCatalogo} nombre="el catálogo" />} />
           <Route
             path="/carrito"
-            element={<RemoteSeguro cargar={cargarCarrito} nombre="el carrito" />}
+            element={
+              <RemoteSeguro cargar={cargarCarrito} props={{ irALogin }} nombre="el carrito" />
+            }
           />
           <Route path="/login" element={<Login />} />
           <Route path="*" element={<Typography>No encontramos esa página.</Typography>} />
