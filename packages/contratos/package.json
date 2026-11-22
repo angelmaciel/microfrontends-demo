@@ -8,7 +8,9 @@
     ".": "./src/index.ts",
     "./tema": "./src/tema.ts",
     "./sesion": "./src/sesion.ts",
-    "./cliente": "./src/cliente.ts"
+    "./cliente": "./src/cliente.ts",
+    "./carrito": "./src/carrito.ts",
+    "./estado": "./src/estado.ts"
   },
   "scripts": {
     "typecheck": "tsc --noEmit"

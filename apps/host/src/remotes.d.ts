@@ -9,8 +9,10 @@ declare module "catalogo/Catalogo" {
 }
 
 declare module "carrito/Carrito" {
+  import type { PropsCarrito } from "@demo/contratos";
   import type { ComponentType } from "react";
-  const Carrito: ComponentType;
+  // Las props salen del contrato: si el equipo del carrito las cambia, el host no compila.
+  const Carrito: ComponentType<PropsCarrito>;
   export default Carrito;
 }
 
