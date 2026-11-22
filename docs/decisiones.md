@@ -84,3 +84,14 @@ Formato: contexto, decisión, por qué y alternativa descartada.
   del carrito cambia sus props, el host deja de compilar en lugar de fallar en producción.
 - **Descartado:** compartir `react-router` como singleton para que el remote navegue solo (acopla
   el remote a las rutas del host) y eventos del navegador (`CustomEvent`), que no tienen tipos.
+
+## D-10 · E2E con Playwright contra el build — aprobada (21/11)
+
+- **Decisión:** Playwright compila las cuatro apps y las levanta con `vite preview` y la API real,
+  sin reutilizar servidores de desarrollo. La caída de un remote o de la API se simula cortando sus
+  peticiones con `page.route`. Cada prueba corre en un celular (Pixel 7) y en escritorio.
+- **Por qué:** es la única prueba de la federación real (en Vitest los remotes son dobles) y prueba
+  lo que se despliega. Reutilizar `npm run dev` dio falsos fallos con servidores que habían
+  arrancado con un `package.json` viejo.
+- **Descartado:** Cypress (más lento en CI y sin soporte nativo para varios orígenes en una prueba)
+  y apagar servidores para probar la resiliencia (lento y poco repetible).
