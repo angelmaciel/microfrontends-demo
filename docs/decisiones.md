@@ -95,3 +95,18 @@ Formato: contexto, decisión, por qué y alternativa descartada.
   arrancado con un `package.json` viejo.
 - **Descartado:** Cypress (más lento en CI y sin soporte nativo para varios orígenes en una prueba)
   y apagar servidores para probar la resiliencia (lento y poco repetible).
+
+## D-11 · Deploy en Render con un Blueprint — aprobada (23/11)
+
+- **Decisión:** `render.yaml` declara cuatro servicios: la API como servicio Node y el host, el
+  catálogo y el carrito como sitios estáticos, cada uno con su URL `mfe-tienda-*.onrender.com`. Las
+  URLs de los remotes y de la API se fijan al compilar (`REMOTE_*_URL`, `VITE_API_URL`); la API lee
+  `ORIGENES_PERMITIDOS` y `PORT` del entorno, y Render genera `JWT_SECRETO`.
+- **Por qué:** un solo archivo versionado describe toda la infraestructura. Cada sitio tiene un
+  `buildFilter`, así que publicar el catálogo no redespliega el carrito ni el host: es el deploy
+  independiente que justifica los microfrontends. Los remotes responden con
+  `Access-Control-Allow-Origin` porque el host importa su `remoteEntry.js` desde otro dominio.
+- **Consecuencias:** en el plan gratuito la API se duerme tras 15 minutos sin uso y tarda cerca de
+  un minuto en volver; los sitios estáticos no se duermen. El E2E de compra pasó contra producción.
+- **Descartado:** Vercel o Netlify para los estáticos más Render para la API (dos plataformas que
+  configurar) y un solo sitio con los tres builds en carpetas (perdería el deploy independiente).
