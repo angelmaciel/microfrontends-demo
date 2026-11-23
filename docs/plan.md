@@ -44,14 +44,14 @@ sin levantar el host.
 
 ## Fases (una vertical a la vez, cada una cierra con pruebas en verde)
 
-| Fase | Día    | Contenido                                                                                            | Cierra cuando                                                            | Estado       |
-| ---- | ------ | ---------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------ | ------------ |
-| 0    | mié 18 | Monorepo (npm workspaces), TS estricto, ESLint, Vitest, CI de calidad y seguridad, docs              | `npm run verificar` en verde                                             | ✅ hecha     |
-| 1    | jue 19 | host + catalogo + carrito federados, React compartido como singleton, fallback si un remote no carga | Se ve el catálogo dentro del host y el host sobrevive si apago un remote | ✅ hecha     |
-| 2    | jue 19 | API Hono + login JWT + ruta protegida + 401 → cerrar sesión; catálogo con productos reales           | Pruebas de API y del flujo de login                                      | ✅ hecha     |
-| 3    | vie 20 | Store Redux compartido: agregar en catalogo, ver en carrito y en el contador                         | Prueba E2E del flujo completo                                            | ✅ hecha     |
-| 4    | sáb 21 | Más pruebas de componentes, Playwright E2E del sistema compuesto y su job en CI                      | CI en verde                                                              | ✅ hecha     |
-| 5    | dom 22 | Deploy (cada app por separado), README con diagrama y guion de la entrevista                         | URL pública funcionando                                                  | ⏭️ siguiente |
+| Fase | Día    | Contenido                                                                                            | Cierra cuando                                                            | Estado            |
+| ---- | ------ | ---------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------ | ----------------- |
+| 0    | mié 18 | Monorepo (npm workspaces), TS estricto, ESLint, Vitest, CI de calidad y seguridad, docs              | `npm run verificar` en verde                                             | ✅ hecha          |
+| 1    | jue 19 | host + catalogo + carrito federados, React compartido como singleton, fallback si un remote no carga | Se ve el catálogo dentro del host y el host sobrevive si apago un remote | ✅ hecha          |
+| 2    | jue 19 | API Hono + login JWT + ruta protegida + 401 → cerrar sesión; catálogo con productos reales           | Pruebas de API y del flujo de login                                      | ✅ hecha          |
+| 3    | vie 20 | Store Redux compartido: agregar en catalogo, ver en carrito y en el contador                         | Prueba E2E del flujo completo                                            | ✅ hecha          |
+| 4    | sáb 21 | Más pruebas de componentes, Playwright E2E del sistema compuesto y su job en CI                      | CI en verde                                                              | ✅ hecha          |
+| 5    | dom 22 | Deploy (cada app por separado), README con diagrama y guion de la entrevista                         | URL pública funcionando                                                  | ✅ hecha (lun 23) |
 
 ### Fase 1 — qué hay que resolver al empezar
 

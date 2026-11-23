@@ -5,8 +5,14 @@ el navegador con **Module Federation**. Incluye estado compartido con **Redux To
 autenticación con **JWT**, **Material UI** como sistema de diseño común y pruebas con **Vitest +
 Testing Library**.
 
-> En construcción. El estado de cada fase está en [docs/plan.md](docs/plan.md) y las decisiones de
-> arquitectura, con su porqué, en [docs/decisiones.md](docs/decisiones.md).
+**Demo publicada:** https://mfe-tienda-host.onrender.com — usuario **demo@tienda.com** /
+**demo1234**.
+
+> La API corre en el plan gratuito de Render y se duerme tras 15 minutos sin uso: la primera carga
+> puede tardar cerca de un minuto.
+
+El plan por fases está en [docs/plan.md](docs/plan.md) y las decisiones de arquitectura, con su
+porqué, en [docs/decisiones.md](docs/decisiones.md).
 
 ## Arquitectura
 
@@ -17,6 +23,21 @@ Testing Library**.
 | `apps/carrito`       | 5002   | Carrito, contador del encabezado y confirmación         |
 | `apps/api`           | 4000   | Login con JWT, productos y pedidos protegidos           |
 | `packages/contratos` | —      | Tipos, utilidades y tema compartidos                    |
+
+## Deploy
+
+Cada pieza es un servicio propio en Render, declarado en [render.yaml](render.yaml) (D-11):
+
+| Servicio | URL                                                     |
+| -------- | ------------------------------------------------------- |
+| host     | https://mfe-tienda-host.onrender.com                    |
+| catalogo | https://mfe-tienda-catalogo.onrender.com/remoteEntry.js |
+| carrito  | https://mfe-tienda-carrito.onrender.com/remoteEntry.js  |
+| api      | https://mfe-tienda-api.onrender.com/api/salud           |
+
+Cada merge a `main` despliega solo los servicios cuyo código cambió (`buildFilter`). El host recibe
+las URLs de los remotes al compilar (`REMOTE_CATALOGO_URL`, `REMOTE_CARRITO_URL`), las tres apps la
+de la API (`VITE_API_URL`) y la API lee `ORIGENES_PERMITIDOS` para CORS.
 
 ## Cómo correrlo
 
