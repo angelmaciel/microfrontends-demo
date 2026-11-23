@@ -10,9 +10,16 @@ if (!secreto || secreto.length < 32) {
   process.exit(1);
 }
 
-const puerto = Number(process.env.PUERTO ?? 4000);
-const app = crearApp({ secreto });
+// En producción, los dominios de los microfrontends separados por coma. Sin la variable se usan
+// los de desarrollo (localhost), así `npm run dev` no necesita configurar nada.
+const origenes = process.env.ORIGENES_PERMITIDOS?.split(",")
+  .map((origen) => origen.trim())
+  .filter(Boolean);
+
+// Render (y la mayoría de las plataformas) asigna el puerto en PORT; PUERTO queda para local.
+const puerto = Number(process.env.PORT ?? process.env.PUERTO ?? 4000);
+const app = crearApp({ secreto, origenes });
 
 serve({ fetch: app.fetch, port: puerto }, (info) => {
-  console.log(`API escuchando en http://localhost:${info.port}/api`);
+  console.log(`API escuchando en el puerto ${info.port}`);
 });

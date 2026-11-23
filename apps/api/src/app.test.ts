@@ -44,6 +44,25 @@ describe("api", () => {
     expect(ajeno.headers.get("access-control-allow-origin")).toBeNull();
   });
 
+  it("en producción permite los orígenes que recibe y ya no los de localhost", async () => {
+    const produccion = crearApp({
+      secreto: SECRETO,
+      origenes: ["https://tienda-host.onrender.com"],
+    });
+
+    const publicado = await produccion.request("/api/salud", {
+      headers: { Origin: "https://tienda-host.onrender.com" },
+    });
+    expect(publicado.headers.get("access-control-allow-origin")).toBe(
+      "https://tienda-host.onrender.com",
+    );
+
+    const local = await produccion.request("/api/salud", {
+      headers: { Origin: "http://localhost:5000" },
+    });
+    expect(local.headers.get("access-control-allow-origin")).toBeNull();
+  });
+
   it("una ruta inexistente responde 404 en español", async () => {
     const res = await app.request("/api/no-existe");
     expect(res.status).toBe(404);
