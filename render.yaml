@@ -1,0 +1,78 @@
+# Blueprint de Render (D-11): cada pieza es un servicio propio, con su URL, su build y su deploy.
+# Que el host y los remotes sean sitios separados es lo que demuestra el deploy independiente:
+# publicar el catálogo no recompila ni redespliega el carrito ni el host.
+#
+# Las URLs salen del nombre de cada servicio (https://<name>.onrender.com). Si Render asignara otra
+# porque el nombre está tomado, hay que corregirla en las variables de entorno.
+
+services:
+  # API: servicio Node. En el plan gratuito se duerme tras 15 min sin uso y tarda ~1 min en volver.
+  - type: web
+    name: mfe-tienda-api
+    runtime: node
+    plan: free
+    buildCommand: npm ci
+    startCommand: npm run start -w @demo/api
+    healthCheckPath: /api/salud
+    envVars:
+      # Render genera un valor aleatorio al crear el servicio: el secreto nunca pasa por el repo.
+      - key: JWT_SECRETO
+        generateValue: true
+      - key: ORIGENES_PERMITIDOS
+        value: https://mfe-tienda-host.onrender.com,https://mfe-tienda-catalogo.onrender.com,https://mfe-tienda-carrito.onrender.com
+
+  # Remote del catálogo: sitio estático.
+  - type: web
+    name: mfe-tienda-catalogo
+    runtime: static
+    buildCommand: npm ci && npm run build -w @demo/catalogo
+    staticPublishPath: apps/catalogo/dist
+    # Solo se redespliega si cambió su código o el contrato compartido.
+    buildFilter:
+      paths: [apps/catalogo/**, packages/contratos/**, package-lock.json]
+    # El host importa remoteEntry.js desde otro dominio: sin este encabezado el navegador lo
+    # bloquea. Son archivos públicos y sin cookies, así que `*` no expone nada.
+    headers:
+      - path: /*
+        name: Access-Control-Allow-Origin
+        value: "*"
+    envVars:
+      - key: VITE_API_URL
+        value: https://mfe-tienda-api.onrender.com/api
+
+  # Remote del carrito: sitio estático, mismo criterio que el catálogo.
+  - type: web
+    name: mfe-tienda-carrito
+    runtime: static
+    buildCommand: npm ci && npm run build -w @demo/carrito
+    staticPublishPath: apps/carrito/dist
+    buildFilter:
+      paths: [apps/carrito/**, packages/contratos/**, package-lock.json]
+    headers:
+      - path: /*
+        name: Access-Control-Allow-Origin
+        value: "*"
+    envVars:
+      - key: VITE_API_URL
+        value: https://mfe-tienda-api.onrender.com/api
+
+  # Host: sitio estático. Las URLs de los remotes se fijan al compilar (vite.config.ts del host).
+  - type: web
+    name: mfe-tienda-host
+    runtime: static
+    buildCommand: npm ci && npm run build -w @demo/host
+    staticPublishPath: apps/host/dist
+    buildFilter:
+      paths: [apps/host/**, packages/contratos/**, package-lock.json]
+    # SPA: /carrito o /login abiertos directo devuelven index.html y React Router decide.
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
+    envVars:
+      - key: VITE_API_URL
+        value: https://mfe-tienda-api.onrender.com/api
+      - key: REMOTE_CATALOGO_URL
+        value: https://mfe-tienda-catalogo.onrender.com
+      - key: REMOTE_CARRITO_URL
+        value: https://mfe-tienda-carrito.onrender.com
