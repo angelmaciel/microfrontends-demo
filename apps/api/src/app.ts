@@ -13,8 +13,12 @@ import { z } from "zod";
 import { productos, usuarios } from "./datos";
 import { type DatosToken, contrasenaValida, firmarToken, verificarToken } from "./seguridad";
 
-// Orígenes de los microfrontends en desarrollo. En producción se leen del entorno (fase 5).
-const ORIGENES = ["http://localhost:5000", "http://localhost:5001", "http://localhost:5002"];
+// Orígenes de los microfrontends en desarrollo. En producción servidor.ts pasa los del entorno.
+const ORIGENES_DESARROLLO = [
+  "http://localhost:5000",
+  "http://localhost:5001",
+  "http://localhost:5002",
+];
 
 const esquemaLogin = z.object({
   email: z.email("El email no es válido"),
@@ -48,13 +52,15 @@ async function leerCuerpo<T>(c: Context, esquema: z.ZodType<T>): Promise<T | nul
 interface Opciones {
   /** Secreto para firmar los JWT. Se inyecta para poder probar sin `.env`. */
   secreto: string;
+  /** Orígenes con permiso de CORS: los dominios donde están publicados los microfrontends. */
+  origenes?: string[];
 }
 
-export function crearApp({ secreto }: Opciones) {
+export function crearApp({ secreto, origenes = ORIGENES_DESARROLLO }: Opciones) {
   const clave = new TextEncoder().encode(secreto);
   const app = new Hono<Entorno>().basePath("/api");
 
-  app.use("*", cors({ origin: ORIGENES, allowHeaders: ["Authorization", "Content-Type"] }));
+  app.use("*", cors({ origin: origenes, allowHeaders: ["Authorization", "Content-Type"] }));
 
   // Solo deja pasar requests con un `Authorization: Bearer <token>` válido y vigente.
   const requiereSesion = createMiddleware<Entorno>(async (c, next) => {
