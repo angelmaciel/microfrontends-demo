@@ -50,8 +50,8 @@ sin levantar el host.
 | 1    | jue 19 | host + catalogo + carrito federados, React compartido como singleton, fallback si un remote no carga | Se ve el catálogo dentro del host y el host sobrevive si apago un remote | ✅ hecha     |
 | 2    | jue 19 | API Hono + login JWT + ruta protegida + 401 → cerrar sesión; catálogo con productos reales           | Pruebas de API y del flujo de login                                      | ✅ hecha     |
 | 3    | vie 20 | Store Redux compartido: agregar en catalogo, ver en carrito y en el contador                         | Prueba E2E del flujo completo                                            | ✅ hecha     |
-| 4    | sáb 21 | Más pruebas de componentes, Playwright E2E del sistema compuesto y su job en CI                      | CI en verde                                                              | ⏭️ siguiente |
-| 5    | dom 22 | Deploy (cada app por separado), README con diagrama y guion de la entrevista                         | URL pública funcionando                                                  | pendiente    |
+| 4    | sáb 21 | Más pruebas de componentes, Playwright E2E del sistema compuesto y su job en CI                      | CI en verde                                                              | ✅ hecha     |
+| 5    | dom 22 | Deploy (cada app por separado), README con diagrama y guion de la entrevista                         | URL pública funcionando                                                  | ⏭️ siguiente |
 
 ### Fase 1 — qué hay que resolver al empezar
 
@@ -85,6 +85,16 @@ sin levantar el host.
 - Job de CI que construye las apps, las levanta y corre Playwright.
 - Ticket #3: el encabezado no se recupera cuando el carrito vuelve.
 - Proteger `main` en GitHub: PR obligatorio y checks del CI en verde.
+
+### Fase 5 — qué hay que resolver al empezar
+
+- Dónde se despliega cada pieza: los tres frontends como sitios estáticos independientes y la API
+  como servicio Node. Registrar la elección como decisión.
+- URLs de producción: `REMOTE_CATALOGO_URL` y `REMOTE_CARRITO_URL` al compilar el host,
+  `VITE_API_URL` en las tres apps y los orígenes de CORS de la API por variable de entorno.
+- `JWT_SECRETO` como secreto del servicio, nunca en el repo.
+- Si el plan gratuito duerme la API, avisarlo en la UI o despertarla antes de la entrevista.
+- README con el diagrama, el link público y el guion de la entrevista.
 
 ### Dato medido en la fase 0 (sirve para la entrevista)
 

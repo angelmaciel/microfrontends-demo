@@ -51,3 +51,14 @@ npm run verificar
 
 Corre lint, tipos, formato y pruebas. Lo mismo corre en GitHub Actions en cada push, junto con el
 escaneo de secretos y la auditoría de dependencias.
+
+### Pruebas E2E
+
+```bash
+npx playwright install chromium   # solo la primera vez
+npm run e2e
+```
+
+Compila las cuatro apps, las levanta como en producción (`vite preview` y la API) y recorre el flujo
+de compra en Chromium, en celular y escritorio. También simula el carrito y la API caídos. Antes hay
+que apagar `npm run dev`, porque usa los mismos puertos. El CI corre lo mismo en cada pull request.

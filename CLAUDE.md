@@ -33,6 +33,7 @@ columna Estado de `docs/plan.md`.
 | `npm run build`                 | build de producción de cada app                              |
 | `npm test -- --project host`    | pruebas de un solo workspace                                 |
 | `npm run test:cov`              | pruebas con cobertura                                        |
+| `npm run e2e`                   | build + Playwright contra el sistema compuesto (apagar dev)  |
 
 ## Estructura
 
@@ -51,7 +52,7 @@ docs/          plan y decisiones
 
 React 19.3 · TypeScript 6 estricto · Vite 8 · `@module-federation/vite` 1.23 · Redux Toolkit 2 +
 react-redux 9 · React Router 8 · Material UI 9 · Hono 4 + `jose` · Zod 4 · Vitest 5 + Testing
-Library · Playwright (fase 4) · GitHub Actions · npm workspaces · Node 24.
+Library · Playwright · GitHub Actions · npm workspaces · Node 24.
 
 ## Reglas de código
 
